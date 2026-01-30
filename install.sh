@@ -110,6 +110,12 @@ run_with_progress() {
   fi
 }
 
+# Detect interactive mode (use /dev/tty for prompts when available)
+INTERACTIVE=false
+if [[ -c /dev/tty && -r /dev/tty ]]; then
+  INTERACTIVE=true
+fi
+
 # Show banner
 show_banner
 
@@ -143,7 +149,11 @@ echo "  5) ${C_BLUE}🇪🇺 Belgium${RESET} (europe-west1)"
 echo "  6) ${C_BLUE}🇮🇳 India${RESET} (asia-south1)"
 printf "\n"
 
-read -rp "${C_GREEN}Choose region [1-6, default 1]:${RESET} " _r < /dev/tty || true
+if [[ "${INTERACTIVE:-false}" == "true" ]]; then
+  read -rp "${C_GREEN}Choose region [1-6, default 1]:${RESET} " _r < /dev/tty || true
+else
+  _r=""
+fi
 case "${_r:-1}" in
   2) REGION="asia-southeast1" ;;
   3) REGION="asia-southeast2" ;;
@@ -162,7 +172,11 @@ printf "\n${C_YELLOW}┌──────────────────�
 printf "${C_YELLOW}│${RESET} ${C_CYAN}⚙️ Compute Resources${RESET}                                  ${C_YELLOW}│${RESET}\n"
 printf "${C_YELLOW}└──────────────────────────────────────────────────────┘${RESET}\n\n"
 
-read -rp "${C_GREEN}CPU Cores [1/2/4/6, default 2]:${RESET} " _cpu < /dev/tty || true
+if [[ "${INTERACTIVE:-false}" == "true" ]]; then
+  read -rp "${C_GREEN}CPU Cores [1/2/4/6, default 2]:${RESET} " _cpu < /dev/tty || true
+else
+  _cpu=""
+fi
 CPU="${_cpu:-2}"
 
 printf "\n${C_GRAY}Available Memory Options:${RESET}\n"
@@ -170,7 +184,11 @@ echo "  ${C_GRAY}•${RESET} 512Mi  ${C_GRAY}•${RESET} 1Gi    ${C_GRAY}•${RE
 echo "  ${C_GRAY}•${RESET} 4Gi    ${C_GRAY}•${RESET} 8Gi    ${C_GRAY}•${RESET} 16Gi"
 printf "\n"
 
-read -rp "${C_GREEN}Memory [default 2Gi]:${RESET} " _mem < /dev/tty || true
+if [[ "${INTERACTIVE:-false}" == "true" ]]; then
+  read -rp "${C_GREEN}Memory [default 2Gi]:${RESET} " _mem < /dev/tty || true
+else
+  _mem=""
+fi
 MEMORY="${_mem:-2Gi}"
 
 show_success "Resource Configuration"
@@ -188,7 +206,11 @@ SERVICE="${SERVICE:-vless-ws}"
 TIMEOUT="${TIMEOUT:-3600}"
 PORT="${PORT:-8080}"
 
-read -rp "${C_GREEN}Service Name [default: ${SERVICE}]:${RESET} " _svc < /dev/tty || true
+if [[ "${INTERACTIVE:-false}" == "true" ]]; then
+  read -rp "${C_GREEN}Service Name [default: ${SERVICE}]:${RESET} " _svc < /dev/tty || true
+else
+  _svc=""
+fi
 SERVICE="${_svc:-$SERVICE}"
 
 show_success "Service Configuration"
