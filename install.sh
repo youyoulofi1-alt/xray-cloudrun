@@ -66,6 +66,12 @@ show_info() {
 
 show_warning() {
   printf "${C_YELLOW}${BOLD}⚠${RESET} ${C_YELLOW}%s${RESET}\n" "$1"
+  # If REGION was provided in the environment and we're non-interactive, prefer it
+  REGION="${REGION:-}"
+  if [[ -z "${_r:-}" && -n "${REGION}" ]]; then
+    # keep REGION as provided
+    :
+  else
 }
 
 show_error() {
