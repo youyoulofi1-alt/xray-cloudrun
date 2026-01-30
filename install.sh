@@ -66,12 +66,6 @@ show_info() {
 
 show_warning() {
   printf "${C_YELLOW}${BOLD}⚠${RESET} ${C_YELLOW}%s${RESET}\n" "$1"
-  # If REGION was provided in the environment and we're non-interactive, prefer it
-  REGION="${REGION:-}"
-  if [[ -z "${_r:-}" && -n "${REGION}" ]]; then
-    # keep REGION as provided
-    :
-  else
 }
 
 show_error() {
@@ -160,14 +154,22 @@ if [[ "${INTERACTIVE:-false}" == "true" ]]; then
 else
   _r=""
 fi
-case "${_r:-1}" in
-  2) REGION="asia-southeast1" ;;
-  3) REGION="asia-southeast2" ;;
-  4) REGION="asia-northeast1" ;;
-  5) REGION="europe-west1" ;;
-  6) REGION="asia-south1" ;;
-  *) REGION="us-central1" ;;
-esac
+
+# If REGION was provided in the environment and we're non-interactive, prefer it
+REGION="${REGION:-}"
+if [[ -z "${_r:-}" && -n "${REGION}" ]]; then
+  # keep REGION as provided
+  :
+else
+  case "${_r:-1}" in
+    2) REGION="asia-southeast1" ;;
+    3) REGION="asia-southeast2" ;;
+    4) REGION="asia-northeast1" ;;
+    5) REGION="europe-west1" ;;
+    6) REGION="asia-south1" ;;
+    *) REGION="us-central1" ;;
+  esac
+fi
 
 show_success "Selected Region: ${C_CYAN}$REGION${RESET}"
 
