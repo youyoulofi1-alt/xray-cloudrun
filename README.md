@@ -18,10 +18,10 @@ Deploy Xray-core on Google Cloud Run with WebSocket + TLS.
 ## Usage
 
 ```bash
-git clone https://github.com/YOURNAME/xray-cloudrun.git
+git clone https://github.com/youyoulofi1-alt/xray-cloudrun.git
 cd xray-cloudrun
 chmod +x install.sh
 ./install.sh
 
 
-curl -fsSL https://raw.githubusercontent.com/USERNAME/xray-cloudrun/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/youyoulofi1-alt/xray-cloudrun/main/install.sh | bash
