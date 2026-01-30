@@ -25,25 +25,25 @@ fi
 PROJECT_NUMBER="$(gcloud projects describe "$PROJECT" --format='value(projectNumber)')"
 
 # ===== User Inputs =====
-# Try to read from /dev/tty if available, otherwise use defaults
-if [[ -t 0 ]] || [[ -p /dev/stdin ]]; then
-  read -rp "🔐 Choose Protocol (vless/vmess/trojan) [vless]: " PROTO
-  read -rp "📡 WebSocket Path (default: /ws): " WS_PATH
-  read -rp "🌐 Custom Domain (empty = run.app): " CUSTOM_DOMAIN || true
-  read -rp "🪪 Service Name (default: xray-ws): " SERVICE
+# Redirect input from /dev/tty to work with curl | bash
+if [[ -c /dev/tty ]]; then
+  read -rp "🔐 Choose Protocol (vless/vmess/trojan) [vless]: " PROTO < /dev/tty
+  read -rp "📡 WebSocket Path (default: /ws): " WS_PATH < /dev/tty
+  read -rp "🌐 Custom Domain (empty = run.app): " CUSTOM_DOMAIN < /dev/tty || true
+  read -rp "🪪 Service Name (default: xray-ws): " SERVICE < /dev/tty
   echo ""
   echo "🌍 Choose Region:"
   echo "1) us-central1"
   echo "2) europe-west1"
   echo "3) asia-southeast1"
-  read -rp "Select [1-3]: " R
+  read -rp "Select [1-3]: " R < /dev/tty
 else
   echo "⚠️ Non-interactive mode: using defaults"
-  PROTO=""
-  WS_PATH=""
+  PROTO="vless"
+  WS_PATH="/ws"
   CUSTOM_DOMAIN=""
-  SERVICE=""
-  R=""
+  SERVICE="xray-ws"
+  R="1"
 fi
 
 PROTO="${PROTO,,}"
