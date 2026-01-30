@@ -72,8 +72,7 @@ gcloud run deploy "$SERVICE" \
   --cpu 1 \
   --timeout 3600 \
   --min-instances 1 \
-  --set-env-vars \
-PROTO="$PROTO",USER_ID="$UUID",WS_PATH="$WS_PATH" \
+  --set-env-vars=PROTO="$PROTO",USER_ID="$UUID",WS_PATH="$WS_PATH" \
   --quiet
 
 # ===== Host =====
