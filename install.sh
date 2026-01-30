@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ===== Ensure interactive reads even when run via curl/process substitution =====
-if [[ ! -t 0 ]] && [[ -e /dev/tty ]]; then
-  exec </dev/tty
-fi
+# ===== Interactive reads =====
+# We will read from /dev/tty on each prompt (do not change the script's stdin).
+# This avoids executing typed input as shell commands when running `curl | bash`.
 
 # ===== Logging & error handler =====
 LOG_FILE="/tmp/vless_deploy_$(date +%s).log"
@@ -144,7 +143,7 @@ echo "  5) ${C_BLUE}🇪🇺 Belgium${RESET} (europe-west1)"
 echo "  6) ${C_BLUE}🇮🇳 India${RESET} (asia-south1)"
 printf "\n"
 
-read -rp "${C_GREEN}Choose region [1-6, default 1]:${RESET} " _r || true
+read -rp "${C_GREEN}Choose region [1-6, default 1]:${RESET} " _r < /dev/tty || true
 case "${_r:-1}" in
   2) REGION="asia-southeast1" ;;
   3) REGION="asia-southeast2" ;;
@@ -163,7 +162,7 @@ printf "\n${C_YELLOW}┌──────────────────�
 printf "${C_YELLOW}│${RESET} ${C_CYAN}⚙️ Compute Resources${RESET}                                  ${C_YELLOW}│${RESET}\n"
 printf "${C_YELLOW}└──────────────────────────────────────────────────────┘${RESET}\n\n"
 
-read -rp "${C_GREEN}CPU Cores [1/2/4/6, default 2]:${RESET} " _cpu || true
+read -rp "${C_GREEN}CPU Cores [1/2/4/6, default 2]:${RESET} " _cpu < /dev/tty || true
 CPU="${_cpu:-2}"
 
 printf "\n${C_GRAY}Available Memory Options:${RESET}\n"
@@ -171,7 +170,7 @@ echo "  ${C_GRAY}•${RESET} 512Mi  ${C_GRAY}•${RESET} 1Gi    ${C_GRAY}•${RE
 echo "  ${C_GRAY}•${RESET} 4Gi    ${C_GRAY}•${RESET} 8Gi    ${C_GRAY}•${RESET} 16Gi"
 printf "\n"
 
-read -rp "${C_GREEN}Memory [default 2Gi]:${RESET} " _mem || true
+read -rp "${C_GREEN}Memory [default 2Gi]:${RESET} " _mem < /dev/tty || true
 MEMORY="${_mem:-2Gi}"
 
 show_success "Resource Configuration"
@@ -189,7 +188,7 @@ SERVICE="${SERVICE:-vless-ws}"
 TIMEOUT="${TIMEOUT:-3600}"
 PORT="${PORT:-8080}"
 
-read -rp "${C_GREEN}Service Name [default: ${SERVICE}]:${RESET} " _svc || true
+read -rp "${C_GREEN}Service Name [default: ${SERVICE}]:${RESET} " _svc < /dev/tty || true
 SERVICE="${_svc:-$SERVICE}"
 
 show_success "Service Configuration"
