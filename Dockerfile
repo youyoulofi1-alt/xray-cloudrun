@@ -5,9 +5,9 @@ ENV USER_ID=changeme
 ENV WS_PATH=/ws
 
 RUN apk add --no-cache curl unzip \
- && curl -L -o /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip \
- && unzip /tmp/xray.zip -d /usr/local/bin \
- && chmod +x /usr/local/bin/xray
+  && curl -L -o /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip \
+  && unzip /tmp/xray.zip -d /usr/local/bin \
+  && chmod +x /usr/local/bin/xray
 
 COPY config.json.tpl /config.json.tpl
 

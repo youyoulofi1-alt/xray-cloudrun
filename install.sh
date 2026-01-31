@@ -52,7 +52,13 @@ if [[ ! "$IDX" =~ ^[0-9]+$ ]] || [ "$IDX" -lt 1 ] || [ "$IDX" -gt ${#AVAILABLE_R
   echo "❌ Invalid region selection"
   exit 1
 fi
-REGION="${AVAILABLE_REGIONS[$((IDX-1))]}"
+REGION="${AVAILABLE_REGIONS=(
+  "us-central1"
+  "europe-west4"
+  "us-east1"
+  "asia-east1"
+  "asia-southeast1"
+)}"
 echo "✅ Selected region: $REGION"
 
 # -------- APIs --------
@@ -67,18 +73,41 @@ CMD ["xray", "run", "-config", "/etc/xray/config.json"]
 EOF
 
 # -------- Xray Config --------
+if [ "$PROTO" = "trojan" ]; then
+  CLIENT_CONFIG=$(cat <<EOF
+"clients": [{
+  "password": "$UUID"
+}]
+EOF
+)
+elif [ "$PROTO" = "vless" ]; then
+  CLIENT_CONFIG=$(cat <<EOF
+"clients": [{
+  "id": "$UUID"
+}],
+"decryption": "none"
+EOF
+)
+else # vmess
+  CLIENT_CONFIG=$(cat <<EOF
+"clients": [{
+  "id": "$UUID"
+}]
+EOF
+)
+fi
+
 cat > config.json <<EOF
 {
   "inbounds": [{
     "port": 8080,
     "protocol": "$PROTO",
     "settings": {
-      "clients": [{
-        "id": "$UUID"
-      }]
+      $CLIENT_CONFIG
     },
     "streamSettings": {
       "network": "ws",
+      "security": "none",
       "wsSettings": {
         "path": "$WSPATH"
       }
@@ -105,15 +134,15 @@ URL=$(gcloud run services describe "$SERVICE" --region "$REGION" --format="value
 HOST=${DOMAIN:-${URL#https://}}
 
 # -------- Output --------
-echo ""
 echo "=========================================="
 echo "✅ DEPLOYMENT SUCCESS"
 echo "=========================================="
 echo "Protocol : $PROTO"
 echo "Address  : $HOST"
-echo "Port     : 443"
-echo "UUID     : $UUID"
+echo "Port     : 443 (Cloud Run HTTPS)"
+echo "UUID/PWD : $UUID"
 echo "Path     : $WSPATH"
+echo "Network  : WebSocket"
 echo "TLS      : ON"
 echo "=========================================="
 
