@@ -37,19 +37,20 @@ UUID=$(cat /proc/sys/kernel/random/uuid)
 echo ""
 echo "🔍 Detecting available Cloud Run regions..."
 
-ALL_REGIONS=$(gcloud run regions list --format="value(name)")
-AVAILABLE_REGIONS=()
+# Default regions list
+AVAILABLE_REGIONS=("us-central1" "us-east1" "us-west1" "europe-west1" "asia-east1" "asia-northeast1")
 
-for r in $ALL_REGIONS; do
-  if gcloud run services list --region "$r" --platform=managed &>/dev/null; then
-    AVAILABLE_REGIONS+=("$r")
+# Try to get actual regions with timeout
+if timeout 5 gcloud run regions list --format="value(name)" &>/dev/null; then
+  DETECTED=$(timeout 5 gcloud run regions list --format="value(name)" 2>/dev/null)
+  if [ ! -z "$DETECTED" ]; then
+    AVAILABLE_REGIONS=($DETECTED)
+    echo "✅ Regions detected successfully"
+  else
+    echo "⚠️ Using default regions (detection timed out)"
   fi
-done
-
-# Qwiklabs fallback
-if [ ${#AVAILABLE_REGIONS[@]} -eq 0 ]; then
-  echo "⚠️ Region auto-detection blocked (Qwiklabs detected)"
-  AVAILABLE_REGIONS=("us-central1" "europe-west4")
+else
+  echo "⚠️ Using default regions (gcloud timeout)"
 fi
 
 echo ""
@@ -61,6 +62,11 @@ for r in "${AVAILABLE_REGIONS[@]}"; do
 done
 
 read -rp "Select region [1-${#AVAILABLE_REGIONS[@]}]: " IDX < /dev/tty
+# Validate region selection
+if [[ ! "$IDX" =~ ^[0-9]+$ ]] || [ "$IDX" -lt 1 ] || [ "$IDX" -gt ${#AVAILABLE_REGIONS[@]} ]; then
+  echo "❌ Invalid region selection"
+  exit 1
+fi
 REGION="${AVAILABLE_REGIONS[$((IDX-1))]}"
 
 # -------- APIs --------
