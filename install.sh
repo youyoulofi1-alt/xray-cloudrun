@@ -48,17 +48,15 @@ read -rp "Select region [1-${#AVAILABLE_REGIONS[@]}] (default: 1): " IDX
 IDX="${IDX:-1}"
 
 # Validate region selection
+read -rp "Select region [1-${#AVAILABLE_REGIONS[@]}] (default: 1): " IDX
+IDX="${IDX:-1}"
+
 if [[ ! "$IDX" =~ ^[0-9]+$ ]] || [ "$IDX" -lt 1 ] || [ "$IDX" -gt ${#AVAILABLE_REGIONS[@]} ]; then
   echo "❌ Invalid region selection"
   exit 1
 fi
-REGION="${AVAILABLE_REGIONS=(
-  "us-central1"
-  "europe-west4"
-  "us-east1"
-  "asia-east1"
-  "asia-southeast1"
-)}"
+
+REGION="${AVAILABLE_REGIONS[$((IDX-1))]}"
 echo "✅ Selected region: $REGION"
 
 # -------- APIs --------
