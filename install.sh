@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
+# Open /dev/tty for interactive input when piped
+exec < /dev/tty
+
 echo "=========================================="
 echo "  XRAY Cloud Run (VLESS / VMESS / TROJAN)"
 echo "=========================================="
 
 # -------- Protocol --------
 read -rp "🔐 Choose Protocol (vless/vmess/trojan) [vless]: " PROTO
-# Remove leading/trailing whitespace and convert to lowercase
-PROTO="${PROTO## }"
-PROTO="${PROTO%% }"
 PROTO="${PROTO,,}"
 PROTO="${PROTO:-vless}"
 
