@@ -6,7 +6,7 @@ echo "  XRAY Cloud Run (VLESS / VMESS / TROJAN)"
 echo "=========================================="
 
 # -------- Protocol --------
-read -rp "🔐 Choose Protocol (vless/vmess/trojan) [vless]: " PROTO < /dev/tty
+read -rp "🔐 Choose Protocol (vless/vmess/trojan) [vless]: " PROTO
 # Remove leading/trailing whitespace and convert to lowercase
 PROTO="${PROTO## }"
 PROTO="${PROTO%% }"
@@ -20,14 +20,14 @@ if [[ ! "$PROTO" =~ ^(vless|vmess|trojan)$ ]]; then
 fi
 
 # -------- WS Path --------
-read -rp "📡 WebSocket Path (default: /ws): " WSPATH < /dev/tty
+read -rp "📡 WebSocket Path (default: /ws): " WSPATH
 WSPATH="${WSPATH:-/ws}"
 
 # -------- Domain --------
-read -rp "🌐 Custom Domain (empty = run.app): " DOMAIN < /dev/tty
+read -rp "🌐 Custom Domain (empty = run.app): " DOMAIN
 
 # -------- Service Name --------
-read -rp "🪪 Service Name (default: xray-ws): " SERVICE < /dev/tty
+read -rp "🪪 Service Name (default: xray-ws): " SERVICE
 SERVICE="${SERVICE:-xray-ws}"
 
 # -------- UUID --------
@@ -44,7 +44,7 @@ for r in "${AVAILABLE_REGIONS[@]}"; do
   ((i++))
 done
 
-read -rp "Select region [1-${#AVAILABLE_REGIONS[@]}] (default: 1): " IDX < /dev/tty
+read -rp "Select region [1-${#AVAILABLE_REGIONS[@]}] (default: 1): " IDX
 IDX="${IDX:-1}"
 
 # Validate region selection
