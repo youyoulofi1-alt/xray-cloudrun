@@ -64,11 +64,32 @@ if [[ ! "$PROTO" =~ ^(vless|vmess|trojan)$ ]]; then
 fi
 
 # Process region selection
-case "$R" in
-  2) REGION="europe-west1" ;;
-  3) REGION="asia-southeast1" ;;
-  *) REGION="us-central1" ;;
-esac
+echo "🔍 Detecting available Cloud Run regions..."
+
+ALL_REGIONS=$(gcloud run regions list --format="value(location)")
+AVAILABLE_REGIONS=()
+
+for r in $ALL_REGIONS; do
+  if gcloud run services list --region "$r" &>/dev/null; then
+    AVAILABLE_REGIONS+=("$r")
+  fi
+done
+
+if [ ${#AVAILABLE_REGIONS[@]} -eq 0 ]; then
+  echo "❌ No allowed regions found for this project"
+  exit 1
+fi
+
+echo ""
+echo "🌍 Available regions for this project:"
+i=1
+for r in "${AVAILABLE_REGIONS[@]}"; do
+  echo "$i) $r"
+  ((i++))
+done
+
+read -p "Select region [1-${#AVAILABLE_REGIONS[@]}]: " IDX
+REGION="${AVAILABLE_REGIONS[$((IDX-1))]}"
 
 # ===== Enable APIs =====
 echo "⚙️ Enabling required APIs..."
