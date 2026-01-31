@@ -66,22 +66,23 @@ fi
 # Process region selection
 echo "🔍 Detecting available Cloud Run regions..."
 
-ALL_REGIONS=$(gcloud run regions list --format="value(location)")
+ALL_REGIONS=$(gcloud run regions list --format="value(name)")
 AVAILABLE_REGIONS=()
 
 for r in $ALL_REGIONS; do
-  if gcloud run services list --region "$r" &>/dev/null; then
+  if gcloud run services list --region "$r" --platform=managed &>/dev/null; then
     AVAILABLE_REGIONS+=("$r")
   fi
 done
 
+# Qwiklabs fallback
 if [ ${#AVAILABLE_REGIONS[@]} -eq 0 ]; then
-  echo "❌ No allowed regions found for this project"
-  exit 1
+  echo "⚠️ Region auto-detection blocked (Qwiklabs detected)"
+  AVAILABLE_REGIONS=("us-central1" "europe-west4")
 fi
 
 echo ""
-echo "🌍 Available regions for this project:"
+echo "🌍 Available regions:"
 i=1
 for r in "${AVAILABLE_REGIONS[@]}"; do
   echo "$i) $r"
